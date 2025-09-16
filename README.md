@@ -10,7 +10,7 @@ a music player with features and abilities similar to those of ncmpcpp.
 
 ## License
 
-Copyright (c) xygyl
+Copyright (c) Jaden Kai Rangel
 
 This project is licensed under the MIT license ([LICENSE] or <http://opensource.org/licenses/MIT>)
 
