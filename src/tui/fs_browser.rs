@@ -156,7 +156,7 @@ impl FileBrowser {
     }
 
     /// Lists all items in the directory; displays directories as their name, files as their metadata name, and both by their respective colors.
-    pub fn list_items(&self) -> Vec<ListItem> {
+    pub fn list_items(&self) -> Vec<ListItem<'_>> {
         let fs_directory = &self.config.colors.fs_directory;
         let fs_file = &self.config.colors.fs_file;
 
