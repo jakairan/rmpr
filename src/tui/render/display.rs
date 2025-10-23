@@ -76,13 +76,9 @@ impl App {
         //│ RENDERING │
         //└───────────┘
 
-        // TOP LEFT
         frame.render_widget(self.top_left(), top_left);
-        // TOP CENTER
         frame.render_widget(self.top_center(), top_center);
-        // TOP RIGHT
         frame.render_widget(self.top_right(), top_right);
-        // PROGRESS BAR
         frame.render_widget(self.progress_bar(), bottom);
 
         match self.tab {

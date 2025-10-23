@@ -6,32 +6,14 @@ use crate::{
     handlers::input_handler::InputHandler,
     tui::fs_browser::FileBrowser,
 };
-use crossterm::{
-    event::poll,
-    execute,
-    terminal::{LeaveAlternateScreen, disable_raw_mode},
-};
+use crossterm::event::poll;
 use ratatui::DefaultTerminal;
 use std::{
-    env,
     error::Error,
-    io::stdout,
     path::PathBuf,
     thread::sleep,
     time::{Duration, Instant},
 };
-
-/// Runs the TUI application.
-pub fn run_tui() -> Result<(), Box<dyn Error>> {
-    let mut terminal = ratatui::init();
-    let current_dir = env::current_dir()?;
-    let mut app = App::new(current_dir)?;
-    let res = app.run(&mut terminal);
-    execute!(stdout(), LeaveAlternateScreen)?;
-    disable_raw_mode()?;
-    terminal.show_cursor()?;
-    Ok(res?)
-}
 
 /// The main application.
 pub struct App {

@@ -32,33 +32,28 @@ impl FileMetadata {
     pub fn get_file_data(&mut self, path: &PathBuf) {
         let valid_exts = ["flac", "mp3", "m4a", "mp4"];
 
-        match path.extension() {
-            Some(ext) => {
-                let file_ext = ext.to_string_lossy().to_ascii_lowercase();
-                match valid_exts.contains(&file_ext.as_str()) {
-                    true => {
-                        let tags = Tag::default().read_from_path(path).unwrap();
-                        self.raw_file = path.file_name().map(|n| n.to_string_lossy().to_string());
-                        self.album = tags.album_title().map(|n| n.to_string());
-                        self.artist = tags.artist().map(|n| n.to_string());
-                        self.title = tags.title().map(|n| n.to_string());
-                        self.year = tags.year();
-                        self.duration_display = tags.duration().map(FileMetadata::sec_to_min_sec);
-                        self.duration_as_secs = tags.duration();
-                        self.track_number = tags.track_number();
-                    }
-                    false => {
-                        self.raw_file = path.file_name().map(|n| n.to_string_lossy().to_string())
-                    }
+        if let Some(ext) = path.extension() {
+            let file_ext = ext.to_string_lossy().to_ascii_lowercase();
+            match valid_exts.contains(&file_ext.as_str()) {
+                true => {
+                    let tags = Tag::default().read_from_path(path).unwrap();
+                    self.raw_file = path.file_name().map(|n| n.to_string_lossy().to_string());
+                    self.album = tags.album_title().map(|n| n.to_string());
+                    self.artist = tags.artist().map(|n| n.to_string());
+                    self.title = tags.title().map(|n| n.to_string());
+                    self.year = tags.year();
+                    self.duration_display = tags.duration().map(FileMetadata::sec_to_min_sec);
+                    self.duration_as_secs = tags.duration();
+                    self.track_number = tags.track_number();
                 }
+                false => self.raw_file = path.file_name().map(|n| n.to_string_lossy().to_string()),
             }
-            None => {}
         }
     }
 
     /// Display album or nothing.
     pub fn display_album(&self) -> String {
-        match self.album.as_ref() {
+        match &self.album {
             Some(display) => format!("{}", display),
             None => "".to_string(),
         }
@@ -66,7 +61,7 @@ impl FileMetadata {
 
     /// Display artists or nothing.
     pub fn display_artist(&self) -> String {
-        match self.artist.as_ref() {
+        match &self.artist {
             Some(artist) => format!("{}", artist),
             None => "".to_string(),
         }
@@ -74,7 +69,7 @@ impl FileMetadata {
 
     /// Display title, or raw file, or nothing if neither is found.
     pub fn display_title(&self) -> String {
-        match self.title.as_ref() {
+        match &self.title {
             Some(title) => format!("{}", title),
             None => match &self.raw_file {
                 Some(raw_file) => format!("{}", raw_file),

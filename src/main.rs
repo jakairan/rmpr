@@ -1,11 +1,21 @@
-use std::error::Error;
-
-use crate::tui::render::app::run_tui;
+use crate::tui::render::app::App;
+use crossterm::{
+    execute,
+    terminal::{LeaveAlternateScreen, disable_raw_mode},
+};
+use std::{env, error::Error, io::stdout};
 
 mod data;
 mod handlers;
 mod tui;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    run_tui()
+    let mut terminal = ratatui::init();
+    let current_dir = env::current_dir()?;
+    let mut app = App::new(current_dir)?;
+    let res = app.run(&mut terminal);
+    execute!(stdout(), LeaveAlternateScreen)?;
+    disable_raw_mode()?;
+    terminal.show_cursor()?;
+    Ok(res?)
 }

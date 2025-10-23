@@ -77,9 +77,7 @@ impl App {
                     }
                     self.data = self.meta_manager.pop_next().unwrap_or(FileMetadata::new());
                 }
-                None => {
-                    self.data = FileMetadata::new();
-                }
+                None => self.data = FileMetadata::new(),
             }
         }
     }

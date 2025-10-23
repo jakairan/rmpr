@@ -35,12 +35,8 @@ impl SinkHandler {
         let sink_guard = self.sink.lock().unwrap();
         if let Some(ref sink) = *sink_guard {
             match sink.is_paused() {
-                true => {
-                    sink.play();
-                }
-                false => {
-                    sink.pause();
-                }
+                true => sink.play(),
+                false => sink.pause(),
             }
         }
     }

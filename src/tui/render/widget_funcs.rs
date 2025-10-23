@@ -63,9 +63,7 @@ impl App {
         let track_num = &self.config.colors.track_num;
         let year = &self.config.colors.year;
         Paragraph::new(match self.audio.is_empty() {
-            true => {
-                vec![Line::from("")]
-            }
+            true => vec![Line::from("")],
             false => {
                 vec![
                     Line::from(vec![

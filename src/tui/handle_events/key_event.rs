@@ -6,12 +6,11 @@ use std::io;
 /// Handles events.
 impl App {
     pub fn handle_events(&mut self) -> io::Result<()> {
-        match event::read()? {
-            Event::Key(key_event) if key_event.kind == KeyEventKind::Press => {
-                self.handle_key_event(key_event)
+        if let Event::Key(key_event) = event::read()? {
+            if key_event.kind == KeyEventKind::Press {
+                self.handle_key_event(key_event);
             }
-            _ => {}
-        };
+        }
         Ok(())
     }
 
