@@ -95,22 +95,33 @@ impl App {
 
     /// Renders the tui.
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> std::io::Result<()> {
-        let update_interval = Duration::from_millis(250);
+        const RENDER_INTERVAL: Duration = Duration::from_millis(1000 / 60);
+
+        let mut last_render = Instant::now();
+        let mut last_progbar_update = Instant::now();
+
         while self.state == State::Running {
             let loop_start = Instant::now();
 
-            while loop_start.elapsed() < update_interval {
-                if poll(Duration::from_millis(0))? {
-                    self.handle_events()?;
-                    break;
-                }
-                // Sleep to avoid busy waiting
-                sleep(Duration::from_millis(1));
+            if poll(Duration::from_millis(10))? {
+                self.handle_events()?;
+            }
+
+            if !self.audio.is_empty()
+                && loop_start.duration_since(last_progbar_update) >= Duration::from_millis(50)
+            {
+                self.update_prog_bar();
+                last_progbar_update = loop_start;
             }
 
             self.file_browser.update_entries()?;
-            self.update_prog_bar();
-            terminal.draw(|frame| self.draw(frame))?;
+
+            if loop_start.duration_since(last_render) >= RENDER_INTERVAL {
+                terminal.draw(|frame| self.draw(frame))?;
+                last_render = loop_start;
+            } else {
+                sleep(Duration::from_millis(1));
+            }
         }
         Ok(())
     }
