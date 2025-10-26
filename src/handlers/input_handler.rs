@@ -10,6 +10,7 @@ pub struct InputHandler {
     pub vol: i16,
     pub paused: bool,
 }
+
 impl InputHandler {
     pub fn new() -> Result<Self, Box<dyn Error>> {
         let (stream, stream_handle) = OutputStream::try_default()?;

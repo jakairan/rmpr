@@ -14,17 +14,16 @@ impl App {
         let timestamp = &self.config.colors.timestamp;
         Paragraph::new(vec![
             Line::from(vec![Span::styled(
-                match self.audio.is_empty() {
-                    true => String::new(),
-                    false => {
-                        format!(
-                            "{:.0}:{:02.0}/{}",
-                            self.audio.sink_pos() / 60, // Minutes
-                            self.audio.sink_pos() % 60, // Seconds
-                            // Seperate function since the display could be None
-                            self.data.display_duration_display() // Total time
-                        )
-                    }
+                if self.audio.is_empty() {
+                    String::new()
+                } else {
+                    format!(
+                        "{:.0}:{:02.0}/{}",
+                        self.audio.sink_pos() / 60, // Minutes
+                        self.audio.sink_pos() % 60, // Seconds
+                        // Seperate function since the display could be None
+                        self.data.display_duration_display() // Total time
+                    )
                 },
                 Style::default().fg(self.get_color(timestamp)),
             )]),
@@ -32,9 +31,7 @@ impl App {
                 format!(
                     "{}",
                     match self.audio.is_empty() {
-                        true => {
-                            "stopped"
-                        }
+                        true => "stopped",
                         false => match self.audio.paused {
                             true => "paused",
                             false => "playing",
@@ -62,39 +59,39 @@ impl App {
         let title = &self.config.colors.title;
         let track_num = &self.config.colors.track_num;
         let year = &self.config.colors.year;
-        Paragraph::new(match self.audio.is_empty() {
-            true => vec![Line::from("")],
-            false => {
-                vec![
-                    Line::from(vec![
-                        Span::styled(
-                            format!("{}", self.data.display_artist()),
-                            Style::default().fg(self.get_color(artist)),
-                        ),
-                        Span::from(" "),
-                        Span::styled(
-                            format!("{}", self.data.display_title()),
-                            Style::default().fg(self.get_color(title)),
-                        ),
-                    ]),
-                    Line::from(vec![
-                        Span::styled(
-                            format!("{}", self.data.display_album()),
-                            Style::default().fg(self.get_color(album)),
-                        ),
-                        Span::from(" "),
-                        Span::styled(
-                            format!("{}", self.data.display_year()),
-                            Style::default().fg(self.get_color(year)),
-                        ),
-                        Span::from(" "),
-                        Span::styled(
-                            format!("{}", self.data.display_track_number()),
-                            Style::default().fg(self.get_color(track_num)),
-                        ),
-                    ]),
-                ]
-            }
+
+        Paragraph::new(if self.audio.is_empty() {
+            vec![Line::from("")]
+        } else {
+            vec![
+                Line::from(vec![
+                    Span::styled(
+                        format!("{}", self.data.display_artist()),
+                        Style::default().fg(self.get_color(artist)),
+                    ),
+                    Span::from(" "),
+                    Span::styled(
+                        format!("{}", self.data.display_title()),
+                        Style::default().fg(self.get_color(title)),
+                    ),
+                ]),
+                Line::from(vec![
+                    Span::styled(
+                        format!("{}", self.data.display_album()),
+                        Style::default().fg(self.get_color(album)),
+                    ),
+                    Span::from(" "),
+                    Span::styled(
+                        format!("{}", self.data.display_year()),
+                        Style::default().fg(self.get_color(year)),
+                    ),
+                    Span::from(" "),
+                    Span::styled(
+                        format!("{}", self.data.display_track_number()),
+                        Style::default().fg(self.get_color(track_num)),
+                    ),
+                ]),
+            ]
         })
         .block(
             Block::new()

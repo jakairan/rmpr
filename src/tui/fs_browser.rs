@@ -50,22 +50,21 @@ impl FileBrowser {
                     }
                 }
 
-                match path.is_dir() {
-                    true => directories.push(path),
-                    false => {
-                        if let Some(ext) = path.extension() {
-                            if playable_exts
-                                .contains(&ext.to_string_lossy().to_ascii_lowercase().as_ref())
-                            {
-                                let mut file_data = FileMetadata::new();
-                                file_data.get_file_data(&path);
-                                let track_number = file_data.track_number.unwrap_or(0);
-                                let title = file_data
-                                    .title
-                                    .unwrap_or_else(|| path.to_string_lossy().to_string());
+                if path.is_dir() {
+                    directories.push(path);
+                } else {
+                    if let Some(ext) = path.extension() {
+                        if playable_exts
+                            .contains(&ext.to_string_lossy().to_ascii_lowercase().as_ref())
+                        {
+                            let mut file_data = FileMetadata::new();
+                            file_data.get_file_data(&path);
+                            let track_number = file_data.track_number.unwrap_or(0);
+                            let title = file_data
+                                .title
+                                .unwrap_or_else(|| path.to_string_lossy().to_string());
 
-                                metadata_list.push((track_number, title, path));
-                            }
+                            metadata_list.push((track_number, title, path));
                         }
                     }
                 }
@@ -163,23 +162,23 @@ impl FileBrowser {
         self.entries
             .iter()
             .map(|entry| {
-                let display_name = match entry.is_dir() {
-                    true => entry
+                let display_name = if entry.is_dir() {
+                    entry
                         .file_name()
                         .map(|s| format!("[{}]", s.to_string_lossy().to_string()))
-                        .unwrap_or_else(|| "Unknown".to_string()),
-                    false => {
-                        let mut file_data = FileMetadata::new();
-                        file_data.get_file_data(entry);
-                        file_data
-                            .title
-                            .unwrap_or(file_data.raw_file.unwrap_or("Unknown".to_string()))
-                    }
+                        .unwrap_or_else(|| "Unknown".to_string())
+                } else {
+                    let mut file_data = FileMetadata::new();
+                    file_data.get_file_data(entry);
+                    file_data
+                        .title
+                        .unwrap_or(file_data.raw_file.unwrap_or("Unknown".to_string()))
                 };
 
-                let style = match entry.is_dir() {
-                    true => Style::default().fg(Color::from_str(fs_directory).unwrap()),
-                    false => Style::default().fg(Color::from_str(fs_file).unwrap()),
+                let style = if entry.is_dir() {
+                    Style::default().fg(Color::from_str(fs_directory).unwrap())
+                } else {
+                    Style::default().fg(Color::from_str(fs_file).unwrap())
                 };
 
                 ListItem::new(display_name).style(style)

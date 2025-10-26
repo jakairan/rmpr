@@ -34,19 +34,19 @@ impl FileMetadata {
 
         if let Some(ext) = path.extension() {
             let file_ext = ext.to_string_lossy().to_ascii_lowercase();
-            match valid_exts.contains(&file_ext.as_str()) {
-                true => {
-                    let tags = Tag::default().read_from_path(path).unwrap();
-                    self.raw_file = path.file_name().map(|n| n.to_string_lossy().to_string());
-                    self.album = tags.album_title().map(|n| n.to_string());
-                    self.artist = tags.artist().map(|n| n.to_string());
-                    self.title = tags.title().map(|n| n.to_string());
-                    self.year = tags.year();
-                    self.duration_display = tags.duration().map(FileMetadata::sec_to_min_sec);
-                    self.duration_as_secs = tags.duration();
-                    self.track_number = tags.track_number();
-                }
-                false => self.raw_file = path.file_name().map(|n| n.to_string_lossy().to_string()),
+
+            if valid_exts.contains(&file_ext.as_str()) {
+                let tags = Tag::default().read_from_path(path).unwrap();
+                self.raw_file = path.file_name().map(|n| n.to_string_lossy().to_string());
+                self.album = tags.album_title().map(|n| n.to_string());
+                self.artist = tags.artist().map(|n| n.to_string());
+                self.title = tags.title().map(|n| n.to_string());
+                self.year = tags.year();
+                self.duration_display = tags.duration().map(FileMetadata::sec_to_min_sec);
+                self.duration_as_secs = tags.duration();
+                self.track_number = tags.track_number();
+            } else {
+                path.file_name().map(|n| n.to_string_lossy().to_string());
             }
         }
     }
@@ -55,7 +55,7 @@ impl FileMetadata {
     pub fn display_album(&self) -> String {
         match &self.album {
             Some(display) => format!("{}", display),
-            None => "".to_string(),
+            None => String::new()
         }
     }
 
@@ -63,7 +63,7 @@ impl FileMetadata {
     pub fn display_artist(&self) -> String {
         match &self.artist {
             Some(artist) => format!("{}", artist),
-            None => "".to_string(),
+            None => String::new(),
         }
     }
 
@@ -73,7 +73,7 @@ impl FileMetadata {
             Some(title) => format!("{}", title),
             None => match &self.raw_file {
                 Some(raw_file) => format!("{}", raw_file),
-                None => "".to_string(),
+                None => String::new(),
             },
         }
     }
@@ -82,7 +82,7 @@ impl FileMetadata {
     pub fn display_year(&self) -> String {
         match self.year {
             Some(year) => format!("{}", year),
-            None => "".to_string(),
+            None => String::new(),
         }
     }
 
@@ -90,7 +90,7 @@ impl FileMetadata {
     pub fn display_track_number(&self) -> String {
         match self.track_number {
             Some(track_number) => format!("{}", track_number),
-            None => "".to_string(),
+            None => String::new(),
         }
     }
 
@@ -105,7 +105,7 @@ impl FileMetadata {
     pub fn display_duration_display(&self) -> String {
         match self.duration_display {
             Some((min, sec)) => format!("{:.0}:{:02.0}", min, sec),
-            None => "".to_string(),
+            None => String::new(),
         }
     }
 }
