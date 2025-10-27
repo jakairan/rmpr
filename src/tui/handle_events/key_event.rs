@@ -2,7 +2,6 @@ use super::super::render::app::{State, Tab};
 use crate::{data::metadata::file_metadata::FileMetadata, tui::render::app::App};
 use crossterm::event::{KeyCode, KeyEvent};
 
-/// Handles events.
 impl App {
     /// Handles key events.
     pub fn handle_key_event(&mut self, key_event: KeyEvent) {

@@ -85,39 +85,33 @@ impl App {
             Tab::Playlist => {
                 // STATUS
                 match self.audio.get_len() {
-                    0 => {
-                        frame.render_widget(
-                            Paragraph::new(Line::from(vec![Span::styled(
-                                "playlist is empty",
-                                Style::default().fg(self.get_color(status)),
-                            )]))
-                            .block(Block::new())
-                            .alignment(Alignment::Center),
-                            info,
-                        );
-                    }
-                    1 => {
-                        frame.render_widget(
-                            Paragraph::new(Line::from(vec![Span::styled(
-                                "playlist (1 item)",
-                                Style::default().fg(self.get_color(status)),
-                            )]))
-                            .block(Block::new())
-                            .alignment(Alignment::Center),
-                            info,
-                        );
-                    }
-                    _ => {
-                        frame.render_widget(
-                            Paragraph::new(Line::from(vec![Span::styled(
-                                format!("playlist ({} items)", self.audio.get_len()),
-                                Style::default().fg(self.get_color(status)),
-                            )]))
-                            .block(Block::new())
-                            .alignment(Alignment::Center),
-                            info,
-                        );
-                    }
+                    0 => frame.render_widget(
+                        Paragraph::new(Line::from(vec![Span::styled(
+                            "playlist is empty",
+                            Style::default().fg(self.get_color(status)),
+                        )]))
+                        .block(Block::new())
+                        .alignment(Alignment::Center),
+                        info,
+                    ),
+                    1 => frame.render_widget(
+                        Paragraph::new(Line::from(vec![Span::styled(
+                            "playlist (1 item)",
+                            Style::default().fg(self.get_color(status)),
+                        )]))
+                        .block(Block::new())
+                        .alignment(Alignment::Center),
+                        info,
+                    ),
+                    _ => frame.render_widget(
+                        Paragraph::new(Line::from(vec![Span::styled(
+                            format!("playlist ({} items)", self.audio.get_len()),
+                            Style::default().fg(self.get_color(status)),
+                        )]))
+                        .block(Block::new())
+                        .alignment(Alignment::Center),
+                        info,
+                    ),
                 }
                 // MIDDLE
                 frame.render_widget(

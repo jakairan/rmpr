@@ -11,27 +11,24 @@ impl App {
     pub fn handle_play(&mut self) {
         if let Some(path) = self.file_browser.entries.get(self.file_browser.selected) {
             if !path.is_dir() {
-                match self.audio.is_empty() {
-                    true => {
-                        self.audio.play(path);
-                        self.meta_manager
-                            .update_current(FileMetadata::new(), path, true);
-                        self.data = self.meta_manager.current.clone();
-                        self.path_queue.push(path.clone());
-                    }
-                    false => {
-                        self.path_queue.insert(0, path.clone());
-                        self.audio.play(&self.path_queue[0]);
+                if self.audio.is_empty() {
+                    self.audio.play(path);
+                    self.meta_manager
+                        .update_current(FileMetadata::new(), path, true);
+                    self.data = self.meta_manager.current.clone();
+                    self.path_queue.push(path.clone());
+                } else {
+                    self.path_queue.insert(0, path.clone());
+                    self.audio.play(&self.path_queue[0]);
 
-                        self.audio.clear_sink();
-                        for element in self.path_queue.iter().skip(1) {
-                            self.audio.append(element);
-                        }
-
-                        self.meta_manager
-                            .update_current(FileMetadata::new(), path, false);
-                        self.data = self.meta_manager.current.clone();
+                    self.audio.clear_sink();
+                    for element in self.path_queue.iter().skip(1) {
+                        self.audio.append(element);
                     }
+
+                    self.meta_manager
+                        .update_current(FileMetadata::new(), path, false);
+                    self.data = self.meta_manager.current.clone();
                 }
             }
         }
@@ -46,17 +43,14 @@ impl App {
     pub fn handle_append(&mut self) {
         if let Some(path) = self.file_browser.entries.get(self.file_browser.selected) {
             if !path.is_dir() {
-                match self.audio.is_empty() {
-                    true => {
-                        self.audio.play(path);
-                        self.meta_manager
-                            .update_current(FileMetadata::new(), path, true);
-                        self.data = self.meta_manager.current.clone();
-                    }
-                    false => {
-                        self.audio.append(path);
-                        self.meta_manager.queue_metadata(FileMetadata::new(), path);
-                    }
+                if self.audio.is_empty() {
+                    self.audio.play(path);
+                    self.meta_manager
+                        .update_current(FileMetadata::new(), path, true);
+                    self.data = self.meta_manager.current.clone();
+                } else {
+                    self.audio.append(path);
+                    self.meta_manager.queue_metadata(FileMetadata::new(), path);
                 }
             }
             self.path_queue.push(path.clone());
