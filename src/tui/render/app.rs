@@ -22,7 +22,6 @@ pub struct App {
     pub file_browser: FileBrowser,
     pub meta_manager: MetadataQueue,
     pub path_queue: Vec<PathBuf>,
-    pub prog_bar: f64,
     pub state: State,
     pub tab: Tab,
 }
@@ -55,23 +54,9 @@ impl App {
             audio: InputHandler::new()?,
             data: FileMetadata::new(),
             path_queue: Vec::new(),
-            prog_bar: 0.0,
             tab: Tab::Browser,
             state: State::Running,
         })
-    }
-
-    /// Update's the progress bar's apperance.
-    ///
-    /// Displays in milliseconds / milliseconds for higher resolution seekbar.Originally intended for gauge's use_unicode(), but it's being kept in case I decide to go back to gauge.
-    pub fn update_prog_bar(&mut self) {
-        if self.audio.is_empty() {
-            self.prog_bar = 0.0;
-            return;
-        }
-        self.prog_bar = (self.audio.sink_pos_millis() as f64
-            / (self.data.duration_as_secs.unwrap() * 1000.0))
-            .clamp(0.0, 1.0);
     }
 
     /// Renders the tui.
@@ -84,7 +69,6 @@ impl App {
             terminal.draw(|frame| self.render(frame))?;
             let timeout = tick_rate.saturating_sub(last_tick.elapsed());
             if !event::poll(timeout)? {
-                self.update_prog_bar();
                 last_tick = Instant::now();
                 continue;
             }

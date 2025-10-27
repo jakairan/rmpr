@@ -155,7 +155,15 @@ impl App {
         LineGauge::default()
             .block(Block::new())
             .label("")
-            .ratio(self.prog_bar)
+            .ratio({
+                if self.audio.is_empty() {
+                    0.0
+                } else {
+                    (self.audio.sink_pos_millis() as f64
+                        / (self.data.duration_as_secs.unwrap() * 1000.0))
+                        .clamp(0.0, 1.0)
+                }
+            })
             .filled_style(Style::default().fg(self.get_color(&seekbar_filled)))
             .unfilled_style(Style::default().fg(self.get_color(&seekbar_unfilled)))
     }
