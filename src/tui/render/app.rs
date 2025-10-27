@@ -77,7 +77,7 @@ impl App {
     /// Renders the tui.
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> std::io::Result<()> {
         self.file_browser.update_entries()?;
-        let tick_rate = Duration::from_millis(33); // renders at ~30fps (1000/30 = 33)
+        let tick_rate = Duration::from_secs(1); // renders at 1fps
         let mut last_tick = Instant::now();
 
         while self.state == State::Running {
