@@ -6,26 +6,25 @@ use crate::{
     handlers::input_handler::InputHandler,
     tui::fs_browser::FileBrowser,
 };
-use crossterm::event::poll;
+use crossterm::event::{self, Event};
 use ratatui::DefaultTerminal;
 use std::{
     error::Error,
     path::PathBuf,
-    thread::sleep,
     time::{Duration, Instant},
 };
 
 /// The main application.
 pub struct App {
-    pub config: ConfigData,
-    pub meta_manager: MetadataQueue,
-    pub file_browser: FileBrowser,
     pub audio: InputHandler,
+    pub config: ConfigData,
     pub data: FileMetadata,
+    pub file_browser: FileBrowser,
+    pub meta_manager: MetadataQueue,
     pub path_queue: Vec<PathBuf>,
     pub prog_bar: f64,
-    pub tab: Tab,
     pub state: State,
+    pub tab: Tab,
 }
 /// Current tab information.
 pub enum Tab {
@@ -77,32 +76,21 @@ impl App {
 
     /// Renders the tui.
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> std::io::Result<()> {
-        const RENDER_INTERVAL: Duration = Duration::from_millis(1000 / 60);
-
-        let mut last_render = Instant::now();
-        let mut last_progbar_update = Instant::now();
+        self.file_browser.update_entries()?;
+        let tick_rate = Duration::from_millis(33); // renders at ~30fps (1000/30 = 33)
+        let mut last_tick = Instant::now();
 
         while self.state == State::Running {
-            let loop_start = Instant::now();
-
-            if poll(Duration::from_millis(10))? {
-                self.handle_events()?;
-            }
-
-            if !self.audio.is_empty()
-                && loop_start.duration_since(last_progbar_update) >= Duration::from_millis(50)
-            {
+            terminal.draw(|frame| self.render(frame))?;
+            let timeout = tick_rate.saturating_sub(last_tick.elapsed());
+            if !event::poll(timeout)? {
                 self.update_prog_bar();
-                last_progbar_update = loop_start;
+                last_tick = Instant::now();
+                continue;
             }
-
-            self.file_browser.update_entries()?;
-
-            if loop_start.duration_since(last_render) >= RENDER_INTERVAL {
-                terminal.draw(|frame| self.draw(frame))?;
-                last_render = loop_start;
-            } else {
-                sleep(Duration::from_millis(1));
+            if let Event::Key(key) = event::read()? {
+                self.handle_key_event(key);
+                self.file_browser.update_entries()?;
             }
         }
         Ok(())

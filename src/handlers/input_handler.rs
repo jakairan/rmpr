@@ -7,8 +7,8 @@ use std::{error::Error, path::PathBuf, sync::Arc, thread};
 pub struct InputHandler {
     pub _stream: OutputStream,
     pub audio_player: Arc<SinkHandler>,
-    pub vol: i16,
     pub paused: bool,
+    pub vol: i16,
 }
 
 impl InputHandler {

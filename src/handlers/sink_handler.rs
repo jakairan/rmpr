@@ -3,8 +3,8 @@ use std::{fs::File, io::BufReader, path::PathBuf, sync::Mutex, time::Duration};
 
 /// Encapsulates an audio sink and an output stream handle.
 pub struct SinkHandler {
-    stream_handle: OutputStreamHandle,
     sink: Mutex<Option<Sink>>,
+    stream_handle: OutputStreamHandle,
 }
 
 impl SinkHandler {

@@ -4,14 +4,14 @@ use std::path::PathBuf;
 /// Encapsulates file data information.
 #[derive(Clone)]
 pub struct FileMetadata {
-    pub raw_file: Option<String>,
     pub album: Option<String>,
     pub artist: Option<String>,
-    pub title: Option<String>,
-    pub year: Option<i32>,
-    pub duration_display: Option<(f64, f64)>,
     pub duration_as_secs: Option<f64>,
+    pub duration_display: Option<(f64, f64)>,
+    pub raw_file: Option<String>,
+    pub title: Option<String>,
     pub track_number: Option<u16>,
+    pub year: Option<i32>,
 }
 
 impl FileMetadata {

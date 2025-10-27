@@ -1,21 +1,11 @@
 use super::super::render::app::{State, Tab};
 use crate::{data::metadata::file_metadata::FileMetadata, tui::render::app::App};
-use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
-use std::io;
+use crossterm::event::{KeyCode, KeyEvent};
 
 /// Handles events.
 impl App {
-    pub fn handle_events(&mut self) -> io::Result<()> {
-        if let Event::Key(key_event) = event::read()? {
-            if key_event.kind == KeyEventKind::Press {
-                self.handle_key_event(key_event);
-            }
-        }
-        Ok(())
-    }
-
     /// Handles key events.
-    fn handle_key_event(&mut self, key_event: KeyEvent) {
+    pub fn handle_key_event(&mut self, key_event: KeyEvent) {
         let vol_delta = self.config.controls.vol_delta;
 
         match key_event.code {

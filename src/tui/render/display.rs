@@ -31,8 +31,8 @@ impl App {
         current_dir
     }
 
-    /// Draws the elements on the terminal.
-    pub fn draw(&self, frame: &mut Frame) {
+    /// Renders the elements on the terminal.
+    pub fn render(&self, frame: &mut Frame) {
         //┌──────┐
         //│ VARS │
         //└──────┘

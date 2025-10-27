@@ -12,10 +12,10 @@ use std::{collections::HashMap, fs::read_dir, io, path::PathBuf, str::FromStr};
 pub struct FileBrowser {
     pub config: ConfigData,
     pub current_dir: PathBuf,
-    pub selected: usize,
+    pub entries: Vec<PathBuf>,
     pub list_state: ListState,
     pub sel_map: HashMap<PathBuf, usize>,
-    pub entries: Vec<PathBuf>,
+    pub selected: usize,
 }
 
 impl FileBrowser {
