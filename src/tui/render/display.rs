@@ -37,8 +37,8 @@ impl App {
         //│ VARS │
         //└──────┘
 
-        let display_path = self.format_display_path(&self.file_browser.current_dir);
         let border = &self.config.colors.border;
+        let display_path = self.format_display_path(&self.file_browser.current_dir);
         let highlight_color = &self.config.colors.highlight_color;
         let status = &self.config.colors.status;
         let _testing_color = "#DDE1FF";

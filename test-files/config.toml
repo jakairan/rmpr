@@ -20,7 +20,6 @@ volume           = "#FF5D85"
 year             = "#00EAFF"
 
 [directories]
-music_directory = "/home/xygyl/Music"
 
 [controls]
 vol_delta = 2

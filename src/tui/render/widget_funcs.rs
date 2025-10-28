@@ -12,6 +12,7 @@ impl App {
         let border = &self.config.colors.border;
         let paused = &self.config.colors.paused;
         let timestamp = &self.config.colors.timestamp;
+
         Paragraph::new(vec![
             Line::from(vec![Span::styled(
                 if self.audio.is_empty() {
@@ -50,6 +51,7 @@ impl App {
         )
         .alignment(Alignment::Left)
     }
+
     pub fn top_center(&self) -> impl Widget {
         let album = &self.config.colors.album;
         let artist = &self.config.colors.artist;
@@ -122,24 +124,15 @@ impl App {
         )
         .alignment(Alignment::Center)
     }
+
     pub fn top_right(&self) -> impl Widget {
         let border = &self.config.colors.border;
-        let options = &self.config.colors.options;
         let volume = &self.config.colors.volume;
-        Paragraph::new(vec![
-            Line::from(vec![Span::styled(
-                format!("{}%", self.audio.vol),
-                Style::default().fg(self.get_color(volume)),
-            )]),
-            Line::from(vec![
-                Span::styled(format!("-"), Style::default().fg(self.get_color(options))),
-                Span::styled(format!("-"), Style::default().fg(self.get_color(options))),
-                Span::styled(format!("-"), Style::default().fg(self.get_color(options))),
-                Span::styled(format!("-"), Style::default().fg(self.get_color(options))),
-                Span::styled(format!("-"), Style::default().fg(self.get_color(options))),
-                Span::styled(format!("-"), Style::default().fg(self.get_color(options))),
-            ]),
-        ])
+
+        Paragraph::new(vec![Line::from(vec![Span::styled(
+            format!("{}%", self.audio.vol),
+            Style::default().fg(self.get_color(volume)),
+        )])])
         .block(
             Block::new()
                 .borders(Borders::TOP | Borders::BOTTOM | Borders::RIGHT)
@@ -149,9 +142,11 @@ impl App {
         )
         .alignment(Alignment::Right)
     }
+
     pub fn progress_bar(&self) -> impl Widget {
         let seekbar_filled = &self.config.colors.seekbar_filled;
         let seekbar_unfilled = &self.config.colors.seekbar_unfilled;
+
         LineGauge::default()
             .block(Block::new())
             .label("")

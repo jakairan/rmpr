@@ -40,12 +40,12 @@ pub enum State {
 
 impl App {
     pub fn new(initial_dir: PathBuf) -> Result<Self, Box<dyn Error>> {
-        let music_dir = load_config().directories.music_directory;
-
-        let final_dir = match music_dir.exists() {
-            true => music_dir,
-            false => initial_dir,
-        };
+        let final_dir = dirs::home_dir()
+            .map(|mut path| {
+                path.push("Music");
+                path
+            })
+            .unwrap_or(initial_dir);
 
         Ok(Self {
             config: load_config(),
@@ -62,7 +62,7 @@ impl App {
     /// Renders the tui.
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> std::io::Result<()> {
         self.file_browser.update_entries()?;
-        let tick_rate = Duration::from_secs(1); // renders at 1fps
+        let tick_rate = Duration::from_millis(100); // renders at 10fps
         let mut last_tick = Instant::now();
 
         while self.state == State::Running {

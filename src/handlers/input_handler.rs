@@ -5,9 +5,9 @@ use std::{error::Error, path::PathBuf, sync::Arc, thread};
 
 /// Encapsulates audio-related state and controls.
 pub struct InputHandler {
-    pub _stream: OutputStream,
     pub audio_player: Arc<SinkHandler>,
     pub paused: bool,
+    pub _stream: OutputStream,
     pub vol: i16,
 }
 
@@ -16,10 +16,10 @@ impl InputHandler {
         let (stream, stream_handle) = OutputStream::try_default()?;
         let audio_player = Arc::new(SinkHandler::new(stream_handle));
         Ok(Self {
-            _stream: stream,
             audio_player,
-            vol: 100,
             paused: false,
+            _stream: stream,
+            vol: 100,
         })
     }
 
