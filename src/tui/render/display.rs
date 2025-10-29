@@ -113,11 +113,10 @@ impl App {
                     ),
                 }
                 // MIDDLE
-                // frame.render_stateful_widget(List::new(self.meta_manager.list_items()), middle, self);
                 frame.render_widget(
-                    Paragraph::new("queue info here")
-                        .centered()
-                        .block(middle_block),
+                    List::new(self.meta_manager.list_items())
+                        .block(middle_block)
+                        .highlight_style(Style::default().fg(self.get_color(highlight_color))),
                     middle,
                 );
             }

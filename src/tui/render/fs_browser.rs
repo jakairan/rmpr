@@ -131,6 +131,7 @@ impl FileBrowser {
 
     /// Navigates into the previous directory, either setting the cursor to the saved position or 0.
     pub fn navigate_back(&mut self) {
+        
         if self.current_dir == self.config.directories.music_directory {
             return;
         }
@@ -167,22 +168,21 @@ impl FileBrowser {
         self.entries
             .iter()
             .map(|entry| {
-                let display_name = if entry.is_dir() {
-                    entry
-                        .file_name()
-                        .map(|s| format!("[{}]", s.to_string_lossy().to_string()))
-                        .unwrap_or(String::from("Unknown"))
+                let (display_name, style) = if entry.is_dir() {
+                    (
+                        entry
+                            .file_name()
+                            .map(|s| format!("[{}]", s.to_string_lossy().to_string()))
+                            .unwrap_or("Unknown".to_string()),
+                        Style::default().fg(Color::from_str(fs_directory).unwrap()),
+                    )
                 } else {
                     let file_data = FileMetadata::get_file_data(entry);
-                    file_data.title.unwrap_or(file_data.raw_file)
+                    (
+                        file_data.title.unwrap_or(file_data.raw_file),
+                        Style::default().fg(Color::from_str(fs_file).unwrap()),
+                    )
                 };
-
-                let style = if entry.is_dir() {
-                    Style::default().fg(Color::from_str(fs_directory).unwrap())
-                } else {
-                    Style::default().fg(Color::from_str(fs_file).unwrap())
-                };
-
                 ListItem::new(display_name).style(style)
             })
             .collect()

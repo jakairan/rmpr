@@ -47,7 +47,7 @@ impl FileMetadata {
         let raw_file = path
             .file_name()
             .map(|n| n.to_string_lossy().to_string())
-            .unwrap_or(String::from("Unknown"));
+            .unwrap_or("Unknown".to_string());
 
         let Some(ext) = path.extension() else {
             return Self::with_file_only(raw_file);
