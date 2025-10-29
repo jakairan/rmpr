@@ -13,9 +13,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut terminal = ratatui::init();
     let current_dir = env::current_dir()?;
     let mut app = App::new(current_dir)?;
-    let res = app.run(&mut terminal);
+    let res = app.run(&mut terminal)?;
     execute!(stdout(), LeaveAlternateScreen)?;
     disable_raw_mode()?;
     terminal.show_cursor()?;
-    Ok(res?)
+    Ok(res)
 }
