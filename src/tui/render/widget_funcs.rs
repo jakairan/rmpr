@@ -1,5 +1,4 @@
-use super::app::Tab;
-use crate::tui::render::app::App;
+use crate::tui::app::{App, Tab};
 use ratatui::{
     layout::Alignment,
     style::Style,

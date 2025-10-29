@@ -1,5 +1,7 @@
-use super::super::render::app::{State, Tab};
-use crate::{data::metadata::file_metadata::FileMetadata, tui::render::app::App};
+use crate::{
+    data::metadata::file_metadata::FileMetadata,
+    tui::app::{App, State, Tab},
+};
 use crossterm::event::{KeyCode, KeyEvent};
 
 impl App {

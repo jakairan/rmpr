@@ -1,4 +1,4 @@
-use crate::{data::metadata::file_metadata::FileMetadata, tui::render::app::App};
+use crate::{data::metadata::file_metadata::FileMetadata, tui::app::App};
 
 impl App {
     /// Creates a sink and appends audio if the sink is empty or non-existant.
@@ -13,8 +13,7 @@ impl App {
             if !path.is_dir() {
                 if self.audio.is_empty() {
                     self.audio.play(path);
-                    self.meta_manager
-                        .update_current(path, true);
+                    self.meta_manager.update_current(path, true);
                     self.data = self.meta_manager.current.clone();
                     self.path_queue.push(path.clone());
                 } else {
@@ -22,12 +21,12 @@ impl App {
                     self.audio.play(&self.path_queue[0]);
 
                     self.audio.clear_sink();
-                    for element in self.path_queue.iter().skip(1) {
-                        self.audio.append(element);
-                    }
+                    self.path_queue
+                        .iter()
+                        .skip(1)
+                        .for_each(|element| self.audio.append(element));
 
-                    self.meta_manager
-                        .update_current(path, false);
+                    self.meta_manager.update_current(path, false);
                     self.data = self.meta_manager.current.clone();
                 }
             }
@@ -45,8 +44,7 @@ impl App {
             if !path.is_dir() {
                 if self.audio.is_empty() {
                     self.audio.play(path);
-                    self.meta_manager
-                        .update_current(path, true);
+                    self.meta_manager.update_current(path, true);
                     self.data = self.meta_manager.current.clone();
                 } else {
                     self.audio.append(path);
@@ -66,9 +64,10 @@ impl App {
             match self.path_queue.get(0) {
                 Some(next_path) => {
                     self.audio.play(next_path);
-                    for element in self.path_queue.iter().skip(1) {
-                        self.audio.append(element);
-                    }
+                    self.path_queue
+                        .iter()
+                        .skip(1)
+                        .for_each(|element| self.audio.append(element));
                     self.data = self.meta_manager.pop_next().unwrap_or(FileMetadata::new());
                 }
                 None => self.data = FileMetadata::new(),

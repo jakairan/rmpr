@@ -8,6 +8,8 @@ use ratatui::{
 };
 use std::{collections::HashMap, fs::read_dir, io, path::PathBuf, str::FromStr};
 
+const PLAYABLE: [&str; 3] = ["flac", "wav", "mp3"];
+
 /// Encapsulates file system browsing state and behavior.
 pub struct FileBrowser {
     pub config: ConfigData,
@@ -34,41 +36,45 @@ impl FileBrowser {
         }
     }
 
+    /// Returns true if the file begins with .
+    fn is_hidden(path: &PathBuf) -> bool {
+        path.file_name()
+            .and_then(|n| n.to_str())
+            .map(|s| s.starts_with('.'))
+            .unwrap_or(false)
+    }
+
+    /// Returns true if the file's extention is in playable_exts
+    fn is_playable_file(path: &PathBuf, playable_exts: &[&str]) -> bool {
+        path.extension()
+            .and_then(|ext| ext.to_str())
+            .map(|ext| playable_exts.contains(&ext.to_ascii_lowercase().as_str()))
+            .unwrap_or(false)
+    }
+
     /// Refreshes the list of entries from the current directory.
     pub fn update_entries(&mut self) -> io::Result<()> {
         let mut directories = Vec::new();
         let mut metadata_list = Vec::new();
 
-        let playable_exts = ["flac", "mp3", "wav"];
-
-        for entry in read_dir(&self.current_dir)? {
-            if let Ok(entry) = entry {
+        read_dir(&self.current_dir)?
+            .filter_map(Result::ok)
+            .filter(|entry| !Self::is_hidden(&entry.path()))
+            .for_each(|entry| {
                 let path = entry.path();
-                if let Some(file_name) = path.file_name() {
-                    if file_name.to_string_lossy().starts_with('.') {
-                        continue;
-                    }
-                }
-
                 if path.is_dir() {
                     directories.push(path);
                 } else {
-                    if let Some(ext) = path.extension() {
-                        if playable_exts
-                            .contains(&ext.to_string_lossy().to_ascii_lowercase().as_ref())
-                        {
-                            let file_data = FileMetadata::get_file_data(&path);
-                            let track_number = file_data.track_number.unwrap_or(0);
-                            let title = file_data
-                                .title
-                                .unwrap_or_else(|| path.to_string_lossy().to_string());
-
-                            metadata_list.push((track_number, title, path));
-                        }
+                    if Self::is_playable_file(&path, &PLAYABLE) {
+                        let file_data = FileMetadata::get_file_data(&path);
+                        metadata_list.push((
+                            file_data.track_number.unwrap_or(0),
+                            file_data.title.unwrap_or(file_data.raw_file),
+                            path,
+                        ));
                     }
                 }
-            }
-        }
+            });
 
         directories.sort();
         metadata_list.sort_by_key(|&(track_number, _, _)| track_number);

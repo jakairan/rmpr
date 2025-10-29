@@ -1,10 +1,11 @@
 use crate::{
     data::{
-        config::{load_config, ConfigData},
-        metadata::file_metadata::FileMetadata, queue::metadata_queue::MetadataQueue,
+        config::{ConfigData, load_config},
+        metadata::file_metadata::FileMetadata,
+        queue::metadata_queue::MetadataQueue,
     },
     handlers::input_handler::InputHandler,
-    tui::fs_browser::FileBrowser,
+    tui::render::fs_browser::FileBrowser,
 };
 use crossterm::event::{self, Event};
 use ratatui::DefaultTerminal;

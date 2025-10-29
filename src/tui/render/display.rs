@@ -1,5 +1,4 @@
-use super::app::Tab;
-use crate::tui::render::app::App;
+use crate::tui::app::{App, Tab};
 use ratatui::{
     Frame,
     layout::{Alignment, Constraint, Layout, Margin},
@@ -114,7 +113,7 @@ impl App {
                     ),
                 }
                 // MIDDLE
-                // frame.render_stateful_widget(List::new(self.list_items()), middle, self);
+                // frame.render_stateful_widget(List::new(self.meta_manager.list_items()), middle, self);
                 frame.render_widget(
                     Paragraph::new("queue info here")
                         .centered()

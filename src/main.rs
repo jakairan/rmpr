@@ -1,4 +1,4 @@
-use crate::tui::render::app::App;
+use crate::tui::app::App;
 use crossterm::{
     execute,
     terminal::{LeaveAlternateScreen, disable_raw_mode},
