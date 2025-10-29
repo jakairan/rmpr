@@ -27,10 +27,10 @@ impl FileBrowser {
         Self {
             config: load_config(),
             current_dir: initial_dir,
-            selected: 0,
-            list_state,
-            sel_map,
             entries: Vec::new(),
+            list_state,
+            selected: 0,
+            sel_map,
         }
     }
 
@@ -57,8 +57,7 @@ impl FileBrowser {
                         if playable_exts
                             .contains(&ext.to_string_lossy().to_ascii_lowercase().as_ref())
                         {
-                            let mut file_data = FileMetadata::new();
-                            file_data.get_file_data(&path);
+                            let file_data = FileMetadata::get_file_data(&path);
                             let track_number = file_data.track_number.unwrap_or(0);
                             let title = file_data
                                 .title
@@ -166,13 +165,10 @@ impl FileBrowser {
                     entry
                         .file_name()
                         .map(|s| format!("[{}]", s.to_string_lossy().to_string()))
-                        .unwrap_or_else(|| "Unknown".to_string())
+                        .unwrap_or(String::from("Unknown"))
                 } else {
-                    let mut file_data = FileMetadata::new();
-                    file_data.get_file_data(entry);
-                    file_data
-                        .title
-                        .unwrap_or(file_data.raw_file.unwrap_or("Unknown".to_string()))
+                    let file_data = FileMetadata::get_file_data(entry);
+                    file_data.title.unwrap_or(file_data.raw_file)
                 };
 
                 let style = if entry.is_dir() {

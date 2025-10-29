@@ -17,8 +17,8 @@ impl MetadataQueue {
     }
 
     /// Updates the current metadata.
-    pub fn update_current(&mut self, mut data: FileMetadata, path: &PathBuf, clear: bool) {
-        data.get_file_data(path);
+    pub fn update_current(&mut self, path: &PathBuf, clear: bool) {
+        let data = FileMetadata::get_file_data(path);
         if clear {
             self.queue.clear();
         }
@@ -27,9 +27,8 @@ impl MetadataQueue {
     }
 
     /// Appends metadata for a queued song.
-    pub fn queue_metadata(&mut self, mut data: FileMetadata, path: &PathBuf) {
-        data.get_file_data(path);
-        self.queue.push(data);
+    pub fn queue_metadata(&mut self, path: &PathBuf) {
+        self.queue.push(FileMetadata::get_file_data(path));
     }
 
     /// When skipping, remove the current metadata (index 0), set it to the next in the vec, then update current.

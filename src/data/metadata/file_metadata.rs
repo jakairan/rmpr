@@ -8,7 +8,7 @@ pub struct FileMetadata {
     pub artist: Option<String>,
     pub duration_as_secs: Option<f64>,
     pub duration_display: Option<(f64, f64)>,
-    pub raw_file: Option<String>,
+    pub raw_file: String,
     pub title: Option<String>,
     pub track_number: Option<u16>,
     pub year: Option<i32>,
@@ -17,7 +17,20 @@ pub struct FileMetadata {
 impl FileMetadata {
     pub fn new() -> Self {
         Self {
-            raw_file: None,
+            raw_file: String::new(),
+            album: None,
+            artist: None,
+            title: None,
+            year: None,
+            duration_display: None,
+            duration_as_secs: None,
+            track_number: None,
+        }
+    }
+
+    fn with_file_only(raw_file: String) -> Self {
+        Self {
+            raw_file,
             album: None,
             artist: None,
             title: None,
@@ -29,25 +42,35 @@ impl FileMetadata {
     }
 
     /// Sets FileMetadata with the respective values from the file.
-    pub fn get_file_data(&mut self, path: &PathBuf) {
+    pub fn get_file_data(path: &PathBuf) -> FileMetadata {
         let valid_exts = ["flac", "mp3", "m4a", "mp4"];
+        let raw_file = path
+            .file_name()
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or(String::from("Unknown"));
 
-        if let Some(ext) = path.extension() {
-            let file_ext = ext.to_string_lossy().to_ascii_lowercase();
+        let Some(ext) = path.extension() else {
+            return Self::with_file_only(raw_file);
+        };
 
-            if valid_exts.contains(&file_ext.as_str()) {
-                let tags = Tag::default().read_from_path(path).unwrap();
-                self.raw_file = path.file_name().map(|n| n.to_string_lossy().to_string());
-                self.album = tags.album_title().map(|n| n.to_string());
-                self.artist = tags.artist().map(|n| n.to_string());
-                self.title = tags.title().map(|n| n.to_string());
-                self.year = tags.year();
-                self.duration_display = tags.duration().map(FileMetadata::sec_to_min_sec);
-                self.duration_as_secs = tags.duration();
-                self.track_number = tags.track_number();
-            } else {
-                path.file_name().map(|n| n.to_string_lossy().to_string());
-            }
+        let file_ext = ext.to_string_lossy().to_ascii_lowercase();
+        if !valid_exts.contains(&file_ext.as_str()) {
+            return Self::with_file_only(raw_file);
+        }
+
+        let Ok(tags) = Tag::default().read_from_path(path) else {
+            return Self::with_file_only(raw_file);
+        };
+
+        Self {
+            raw_file,
+            album: tags.album_title().map(|n| n.to_string()),
+            artist: tags.artist().map(|n| n.to_string()),
+            title: tags.title().map(|n| n.to_string()),
+            year: tags.year(),
+            duration_display: tags.duration().map(FileMetadata::sec_to_min_sec),
+            duration_as_secs: tags.duration(),
+            track_number: tags.track_number(),
         }
     }
 
@@ -55,7 +78,7 @@ impl FileMetadata {
     pub fn display_album(&self) -> String {
         match &self.album {
             Some(display) => format!("{}", display),
-            None => String::new()
+            None => String::new(),
         }
     }
 
@@ -71,10 +94,7 @@ impl FileMetadata {
     pub fn display_title(&self) -> String {
         match &self.title {
             Some(title) => format!("{}", title),
-            None => match &self.raw_file {
-                Some(raw_file) => format!("{}", raw_file),
-                None => String::new(),
-            },
+            None => format!("{}", self.raw_file),
         }
     }
 

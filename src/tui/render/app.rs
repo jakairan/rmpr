@@ -1,7 +1,7 @@
 use crate::{
     data::{
-        config::{ConfigData, load_config},
-        metadata::{file_metadata::FileMetadata, metadata_queue::MetadataQueue},
+        config::{load_config, ConfigData},
+        metadata::file_metadata::FileMetadata, queue::metadata_queue::MetadataQueue,
     },
     handlers::input_handler::InputHandler,
     tui::fs_browser::FileBrowser,

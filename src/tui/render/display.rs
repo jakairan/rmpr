@@ -114,6 +114,7 @@ impl App {
                     ),
                 }
                 // MIDDLE
+                // frame.render_stateful_widget(List::new(self.list_items()), middle, self);
                 frame.render_widget(
                     Paragraph::new("queue info here")
                         .centered()

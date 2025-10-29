@@ -14,7 +14,7 @@ impl App {
                 if self.audio.is_empty() {
                     self.audio.play(path);
                     self.meta_manager
-                        .update_current(FileMetadata::new(), path, true);
+                        .update_current(path, true);
                     self.data = self.meta_manager.current.clone();
                     self.path_queue.push(path.clone());
                 } else {
@@ -27,7 +27,7 @@ impl App {
                     }
 
                     self.meta_manager
-                        .update_current(FileMetadata::new(), path, false);
+                        .update_current(path, false);
                     self.data = self.meta_manager.current.clone();
                 }
             }
@@ -46,11 +46,11 @@ impl App {
                 if self.audio.is_empty() {
                     self.audio.play(path);
                     self.meta_manager
-                        .update_current(FileMetadata::new(), path, true);
+                        .update_current(path, true);
                     self.data = self.meta_manager.current.clone();
                 } else {
                     self.audio.append(path);
-                    self.meta_manager.queue_metadata(FileMetadata::new(), path);
+                    self.meta_manager.queue_metadata(path);
                 }
             }
             self.path_queue.push(path.clone());
