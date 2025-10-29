@@ -1,10 +1,9 @@
+use crate::data::metadata::file_metadata::FileMetadata;
 use ratatui::{
     style::{Color, Style},
     widgets::ListItem,
 };
-
-use crate::data::metadata::file_metadata::FileMetadata;
-use std::{io::Result, path::PathBuf};
+use std::path::PathBuf;
 
 /// Encapsulates metadata queue information for correct displaying.
 #[derive(Clone)]
@@ -34,14 +33,11 @@ impl MetadataQueue {
         self.queue
             .iter()
             .map(|entry| {
-                let name = if let Some(title) = entry.clone().title {
-                    title
-                } else {
-                    entry.clone().raw_file
+                let name = match entry.clone().title {
+                    Some(title) => title,
+                    None => entry.clone().raw_file,
                 };
-
-                let style = Style::default().fg(Color::White);
-                ListItem::new(name).style(style)
+                ListItem::new(name).style(Style::default().fg(Color::White))
             })
             .collect()
     }
