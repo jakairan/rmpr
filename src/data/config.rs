@@ -2,7 +2,7 @@ use serde::Deserialize;
 use std::{fs, path::PathBuf};
 
 /// Encapsulates themeing data.
-#[derive(Deserialize, Clone)] // Clone is needed for lines 69-76 in tui and 140-141 in browser
+#[derive(Deserialize, Clone)]
 #[serde(default)]
 pub struct Colors {
     pub album: String,
@@ -85,10 +85,11 @@ impl Default for Controls {
 
 /// Encapsulates all config.toml parameters.
 #[derive(Deserialize)]
+#[serde(default)]
 pub struct ConfigData {
     pub colors: Colors,
-    pub directories: Directories,
     pub controls: Controls,
+    pub directories: Directories,
 }
 
 impl Default for ConfigData {
