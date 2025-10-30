@@ -1,3 +1,4 @@
+use crate::tui::app::PLAYABLE;
 use audiotags::Tag;
 use std::path::PathBuf;
 
@@ -43,7 +44,6 @@ impl FileMetadata {
 
     /// Sets FileMetadata with the respective values from the file.
     pub fn get_file_data(path: &PathBuf) -> FileMetadata {
-        let valid_exts = ["flac", "mp3", "m4a", "mp4"];
         let raw_file = path
             .file_name()
             .map(|n| n.to_string_lossy().to_string())
@@ -54,7 +54,7 @@ impl FileMetadata {
         };
 
         let file_ext = ext.to_string_lossy().to_ascii_lowercase();
-        if !valid_exts.contains(&file_ext.as_str()) {
+        if !PLAYABLE.contains(&file_ext.as_str()) {
             return Self::with_file_only(raw_file);
         }
 

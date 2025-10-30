@@ -1,14 +1,15 @@
-use crate::data::{
-    config::{ConfigData, load_config},
-    metadata::file_metadata::FileMetadata,
+use crate::{
+    data::{
+        config::{ConfigData, load_config},
+        metadata::file_metadata::FileMetadata,
+    },
+    tui::app::PLAYABLE,
 };
 use ratatui::{
     style::{Color, Style},
     widgets::{ListItem, ListState},
 };
 use std::{collections::HashMap, fs::read_dir, io, path::PathBuf, str::FromStr};
-
-const PLAYABLE: [&str; 3] = ["flac", "wav", "mp3"];
 
 /// Encapsulates file system browsing state and behavior.
 pub struct FileBrowser {
@@ -87,10 +88,8 @@ impl FileBrowser {
             .chain(playable_files.into_iter())
             .collect();
 
-        self.list_state.select(match self.entries.is_empty() {
-            true => None,
-            false => Some(self.selected),
-        });
+        self.list_state
+            .select((!self.entries.is_empty()).then(|| self.selected));
 
         Ok(())
     }
@@ -131,7 +130,6 @@ impl FileBrowser {
 
     /// Navigates into the previous directory, either setting the cursor to the saved position or 0.
     pub fn navigate_back(&mut self) {
-        
         if self.current_dir == self.config.directories.music_directory {
             return;
         }

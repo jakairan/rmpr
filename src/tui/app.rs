@@ -15,6 +15,8 @@ use std::{
     time::{Duration, Instant},
 };
 
+pub const PLAYABLE: [&str; 5] = ["flac", "m4v", "mp3", "mp4", "wav"];
+
 /// The main application.
 pub struct App {
     pub audio: InputHandler,
