@@ -63,7 +63,7 @@ impl App {
     }
 
     /// Renders the tui.
-    pub fn run(&mut self, terminal: &mut DefaultTerminal) -> std::io::Result<()> {
+    pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), Box<dyn Error>> {
         self.file_browser.update_entries()?;
         let tick_rate = Duration::from_millis(100); // renders at 10fps
         let mut last_tick = Instant::now();

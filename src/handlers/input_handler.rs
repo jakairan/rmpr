@@ -58,7 +58,7 @@ impl InputHandler {
     /// Adjusts the volume by a given delta.
     pub fn adjust_volume(&mut self, delta: i16) {
         let new_vol = self.vol + delta;
-        if new_vol >= 0 && new_vol <= 100 {
+        if 0 <= new_vol && new_vol <= 100 {
             self.vol = new_vol;
             self.audio_player.set_volume(self.vol);
         }

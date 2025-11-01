@@ -10,7 +10,6 @@ use std::path::PathBuf;
 pub struct MetadataQueue {
     pub current: FileMetadata,
     pub queue: Vec<FileMetadata>,
-    // pub list: Vec<ListItem>,
 }
 
 impl MetadataQueue {
@@ -21,23 +20,12 @@ impl MetadataQueue {
         }
     }
 
-    // pub fn update_entries(&mut self) -> Result<()> {
-    //     self.list_state.select(match self.queue.is_empty() {
-    //         true => None,
-    //         false => Some(self.selected),
-    //     });
-    //     Ok(())
-    // }
-
     pub fn list_items(&self) -> Vec<ListItem<'_>> {
         self.queue
             .iter()
             .map(|entry| {
-                let name = match entry.clone().title {
-                    Some(title) => title,
-                    None => entry.clone().raw_file,
-                };
-                ListItem::new(name).style(Style::default().fg(Color::White))
+                ListItem::new(entry.title.as_ref().unwrap_or(&entry.raw_file).as_str())
+                    .style(Style::default().fg(Color::White))
             })
             .collect()
     }

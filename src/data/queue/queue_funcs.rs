@@ -32,6 +32,7 @@ impl App {
             }
         }
     }
+
     /// Creates sink if it's empty (equivalent to handle play).
     /// Appends sond to the end of the sink is it isn't empty.
     /// # Examples

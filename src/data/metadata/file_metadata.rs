@@ -9,6 +9,7 @@ pub struct FileMetadata {
     pub artist: Option<String>,
     pub duration_as_secs: Option<f64>,
     pub duration_display: Option<(f64, f64)>,
+    pub file_path: PathBuf,
     pub raw_file: String,
     pub title: Option<String>,
     pub track_number: Option<u16>,
@@ -18,59 +19,66 @@ pub struct FileMetadata {
 impl FileMetadata {
     pub fn new() -> Self {
         Self {
-            raw_file: String::new(),
             album: None,
             artist: None,
-            title: None,
-            year: None,
-            duration_display: None,
             duration_as_secs: None,
+            duration_display: None,
+            file_path: PathBuf::new(),
+            raw_file: String::new(),
+            title: None,
             track_number: None,
+            year: None,
         }
     }
 
-    fn with_file_only(raw_file: String) -> Self {
+    /// Returns the file name or "Unknown"
+    fn get_file_name(path: &PathBuf) -> String {
+        path.file_name()
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or("Unknown".to_string())
+    }
+
+    /// fn with_file_only(raw_file: String) -> Self {
+    fn with_file_only(path: &PathBuf) -> Self {
         Self {
-            raw_file,
             album: None,
             artist: None,
-            title: None,
-            year: None,
-            duration_display: None,
             duration_as_secs: None,
+            duration_display: None,
+            file_path: path.clone(),
+            raw_file: Self::get_file_name(path),
+            title: None,
             track_number: None,
+            year: None,
         }
     }
 
     /// Sets FileMetadata with the respective values from the file.
     pub fn get_file_data(path: &PathBuf) -> FileMetadata {
-        let raw_file = path
-            .file_name()
-            .map(|n| n.to_string_lossy().to_string())
-            .unwrap_or("Unknown".to_string());
+        let file_only = Self::with_file_only(path);
 
         let Some(ext) = path.extension() else {
-            return Self::with_file_only(raw_file);
+            return file_only;
         };
 
-        let file_ext = ext.to_string_lossy().to_ascii_lowercase();
-        if !PLAYABLE.contains(&file_ext.as_str()) {
-            return Self::with_file_only(raw_file);
+        if !PLAYABLE.contains(&ext.to_string_lossy().to_ascii_lowercase().as_str()) {
+            return file_only;
         }
 
         let Ok(tags) = Tag::default().read_from_path(path) else {
-            return Self::with_file_only(raw_file);
+            return file_only;
         };
 
         Self {
-            raw_file,
             album: tags.album_title().map(|n| n.to_string()),
             artist: tags.artist().map(|n| n.to_string()),
-            title: tags.title().map(|n| n.to_string()),
-            year: tags.year(),
-            duration_display: tags.duration().map(FileMetadata::sec_to_min_sec),
             duration_as_secs: tags.duration(),
+            duration_display: tags.duration().map(Self::sec_to_min_sec),
+            file_path: path.clone(),
+            raw_file: Self::get_file_name(path),
+            title: tags.title().map(|n| n.to_string()),
             track_number: tags.track_number(),
+            year: tags.year(),
         }
     }
 

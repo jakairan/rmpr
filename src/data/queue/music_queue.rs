@@ -6,13 +6,12 @@ use ratatui::{
     style::{Color, Style},
     widgets::{ListItem, ListState},
 };
-use std::{io::Result, path::PathBuf};
 
 pub struct MusicQueue {
     pub config: ConfigData,
-    pub entries: Vec<PathBuf>,
+    pub current: FileMetadata,
     pub list_state: ListState,
-    pub selected: usize,
+    pub queue: Vec<FileMetadata>,
 }
 
 impl MusicQueue {
@@ -21,29 +20,19 @@ impl MusicQueue {
         list_state.select(Some(0));
         Self {
             config: load_config(),
-            entries: Vec::new(),
+            current: FileMetadata::new(),
             list_state,
-            selected: 0,
+            queue: Vec::new(),
         }
     }
 
-    pub fn update_entries(&mut self) -> Result<()> {
-        self.list_state.select(match self.entries.is_empty() {
-            true => None,
-            false => Some(self.selected),
-        });
-        Ok(())
-    }
-
     pub fn list_items(&self) -> Vec<ListItem<'_>> {
-        self.entries
+        self.queue
             .iter()
             .map(|entry| {
-                let name = FileMetadata::get_file_data(entry);
-                let display = name.title.unwrap_or(name.raw_file);
-                let style = Style::default().fg(Color::White);
-
-                ListItem::new(display).style(style)
+                let data = FileMetadata::get_file_data(&entry.file_path);
+                ListItem::new(data.title.unwrap_or(data.raw_file).clone())
+                    .style(Style::default().fg(Color::White))
             })
             .collect()
     }
