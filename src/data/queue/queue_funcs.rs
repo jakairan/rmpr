@@ -58,7 +58,7 @@ impl App {
 
     /// Skips the current element in the sink, re-appends the next elements to the sink, and gets the metadata for the new head of the sink.
     pub fn handle_skip(&mut self) {
-        if self.audio.get_len() > 0 {
+        if 0 < self.audio.get_len() {
             self.path_queue.remove(0);
             self.audio.clear_sink();
 

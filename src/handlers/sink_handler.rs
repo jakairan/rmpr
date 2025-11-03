@@ -34,9 +34,10 @@ impl SinkHandler {
     pub fn toggle_play_pause(&self) {
         let sink_guard = self.sink.lock().unwrap();
         if let Some(ref sink) = *sink_guard {
-            match sink.is_paused() {
-                true => sink.play(),
-                false => sink.pause(),
+            if sink.is_paused() {
+                sink.play()
+            } else {
+                sink.pause()
             }
         }
     }
@@ -76,7 +77,7 @@ impl SinkHandler {
         {
             let sink_guard = self.sink.lock().unwrap();
             if let Some(ref sink) = *sink_guard {
-                if sink.len() >= 1 {
+                if 1 <= sink.len() {
                     sink.append(source);
                 }
             }

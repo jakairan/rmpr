@@ -30,8 +30,7 @@ impl MusicQueue {
         self.queue
             .iter()
             .map(|entry| {
-                let data = FileMetadata::get_file_data(&entry.file_path);
-                ListItem::new(data.title.unwrap_or(data.raw_file).clone())
+                ListItem::new(entry.title.as_ref().unwrap_or(&entry.raw_file).as_str())
                     .style(Style::default().fg(Color::White))
             })
             .collect()

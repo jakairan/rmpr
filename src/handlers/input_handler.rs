@@ -1,5 +1,4 @@
 use crate::handlers::sink_handler::SinkHandler;
-
 use rodio::OutputStream;
 use std::{error::Error, path::PathBuf, sync::Arc, thread};
 
@@ -39,9 +38,7 @@ impl InputHandler {
         let path_clone = path.clone();
         let current_vol = self.vol;
         let sink_handler = Arc::clone(&self.audio_player);
-        thread::spawn(move || {
-            sink_handler.append_to_sink(path_clone, current_vol);
-        });
+        sink_handler.append_to_sink(path_clone, current_vol);
     }
 
     /// Removes all currently loaded Sources from the Sink, and pauses it.
