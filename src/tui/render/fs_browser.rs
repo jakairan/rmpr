@@ -9,7 +9,7 @@ use ratatui::{
     style::{Color, Style},
     widgets::{ListItem, ListState},
 };
-use std::{collections::HashMap, fs::read_dir, io, path::PathBuf, str::FromStr};
+use std::{collections::HashMap, error::Error, fs::read_dir, path::PathBuf, str::FromStr};
 
 /// Encapsulates file system browsing state and behavior.
 pub struct FileBrowser {
@@ -54,7 +54,7 @@ impl FileBrowser {
     }
 
     /// Refreshes the list of entries from the current directory.
-    pub fn update_entries(&mut self) -> io::Result<()> {
+    pub fn update_entries(&mut self) -> Result<(), Box<dyn Error>> {
         let mut directories = Vec::new();
         let mut metadata_list = Vec::new();
 
@@ -99,9 +99,10 @@ impl FileBrowser {
         if self.entries.is_empty() {
             return;
         }
-        match self.selected {
-            0 => self.selected = self.entries.len() - 1,
-            _ => self.selected -= 1,
+        if let 0 = self.selected {
+            self.selected = self.entries.len() - 1
+        } else {
+            self.selected -= 1
         }
         self.sel_map.insert(self.current_dir.clone(), self.selected);
     }
@@ -111,9 +112,10 @@ impl FileBrowser {
         if self.entries.is_empty() {
             return;
         }
-        match self.selected < self.entries.len() - 1 {
-            true => self.selected += 1,
-            false => self.selected = 0,
+        if self.selected < self.entries.len() - 1 {
+            self.selected += 1
+        } else {
+            self.selected = 0
         }
         self.sel_map.insert(self.current_dir.clone(), self.selected);
     }

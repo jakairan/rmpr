@@ -16,18 +16,8 @@ use std::{
 };
 
 pub const PLAYABLE: [&str; 5] = ["flac", "m4v", "mp3", "mp4", "wav"];
+const TICK: Duration = Duration::from_millis(100);
 
-/// The main application.
-pub struct App {
-    pub audio: InputHandler,
-    pub config: ConfigData,
-    pub data: FileMetadata,
-    pub file_browser: FileBrowser,
-    pub meta_manager: MetadataQueue,
-    pub path_queue: Vec<PathBuf>,
-    pub state: State,
-    pub tab: Tab,
-}
 /// Current tab information.
 pub enum Tab {
     Playlist,
@@ -39,6 +29,18 @@ pub enum Tab {
 pub enum State {
     Running,
     Quit,
+}
+
+/// The main application.
+pub struct App {
+    pub audio: InputHandler,
+    pub config: ConfigData,
+    pub data: FileMetadata,
+    pub file_browser: FileBrowser,
+    pub meta_manager: MetadataQueue,
+    pub path_queue: Vec<PathBuf>,
+    pub state: State,
+    pub tab: Tab,
 }
 
 impl App {
@@ -65,12 +67,11 @@ impl App {
     /// Renders the tui.
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), Box<dyn Error>> {
         self.file_browser.update_entries()?;
-        let tick_rate = Duration::from_millis(100); // renders at 10fps
         let mut last_tick = Instant::now();
 
         while self.state == State::Running {
             terminal.draw(|frame| self.render(frame))?;
-            let timeout = tick_rate.saturating_sub(last_tick.elapsed());
+            let timeout = TICK.saturating_sub(last_tick.elapsed());
             if !event::poll(timeout)? {
                 last_tick = Instant::now();
                 continue;
