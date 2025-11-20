@@ -174,13 +174,17 @@ impl FileBrowser {
                             .file_name()
                             .map(|s| format!("[{}]", s.to_string_lossy().to_string()))
                             .unwrap_or("Unknown".to_string()),
-                        Style::default().fg(Color::from_str(fs_directory).unwrap()),
+                        Style::default().fg(Color::from_str(fs_directory).expect(
+                            "If the color is set correctly in the config then this shouldn't fail",
+                        )),
                     )
                 } else {
                     let file_data = FileMetadata::get_file_data(entry);
                     (
                         file_data.title.unwrap_or(file_data.raw_file),
-                        Style::default().fg(Color::from_str(fs_file).unwrap()),
+                        Style::default().fg(Color::from_str(fs_file).expect(
+                            "If the color is set correctly in the config then this shouldn't fail",
+                        )),
                     )
                 };
                 ListItem::new(display_name).style(style)

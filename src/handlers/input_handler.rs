@@ -28,7 +28,9 @@ impl InputHandler {
         let current_vol = self.vol;
         let sink_handler = Arc::clone(&self.audio_player);
         thread::spawn(move || {
-            sink_handler.play_file(path_clone, current_vol);
+            if let Err(e) = sink_handler.play_file(path_clone, current_vol) {
+                eprintln!("Failed to play file: {}", e);
+            }
         });
         self.paused = false;
     }
@@ -38,7 +40,9 @@ impl InputHandler {
         let path_clone = path.clone();
         let current_vol = self.vol;
         let sink_handler = Arc::clone(&self.audio_player);
-        sink_handler.append_to_sink(path_clone, current_vol);
+        if let Err(e) = sink_handler.append_to_sink(path_clone, current_vol) {
+            eprintln!("Failed to append file to sink: {}", e);
+        }
     }
 
     /// Removes all currently loaded Sources from the Sink, and pauses it.

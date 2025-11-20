@@ -65,7 +65,7 @@ impl Default for Directories {
                     path.push("Music");
                     path
                 })
-                .unwrap(),
+                .expect("If this fails then the user should set the desired music directory"),
         }
     }
 }
