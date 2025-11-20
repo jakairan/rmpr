@@ -2,7 +2,7 @@ use rodio::{Decoder, OutputStreamHandle, PlayError, Sink, decoder::DecoderError}
 use std::{
     fmt,
     fs::File,
-    io::{self, BufReader},
+    io::{BufReader, Error},
     path::PathBuf,
     sync::Mutex,
     time::Duration,
@@ -10,7 +10,7 @@ use std::{
 
 #[derive(Debug)]
 pub enum AudioError {
-    Io(io::Error),
+    Io(Error),
     Decoder(DecoderError),
     Play(PlayError),
 }
