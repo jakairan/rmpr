@@ -5,7 +5,6 @@ edition = "2024"
 
 [dependencies]
 audiotags  = "0.5.0"
-color-eyre = "0.6.3"
 crossterm  = "0.28.1"
 dirs       = "6.0.0"
 ratatui    = "0.29.0"

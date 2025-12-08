@@ -27,6 +27,7 @@ impl FileBrowser {
         list_state.select(Some(0));
         let mut sel_map = HashMap::new();
         sel_map.insert(initial_dir.clone(), 0);
+
         Self {
             config: load_config(),
             current_dir: initial_dir,
@@ -37,7 +38,7 @@ impl FileBrowser {
         }
     }
 
-    /// Returns true if the file begins with .
+    /// Returns true if the file begins with '.'
     fn is_hidden(path: &PathBuf) -> bool {
         path.file_name()
             .and_then(|n| n.to_str())
@@ -45,7 +46,7 @@ impl FileBrowser {
             .unwrap_or(false)
     }
 
-    /// Returns true if the file's extention is in playable_exts
+    /// Returns true if the file's extention is in PLAYABLE
     fn is_playable_file(path: &PathBuf, playable_exts: &[&str]) -> bool {
         path.extension()
             .and_then(|ext| ext.to_str())
@@ -55,41 +56,37 @@ impl FileBrowser {
 
     /// Refreshes the list of entries from the current directory.
     pub fn update_entries(&mut self) -> Result<(), Box<dyn Error>> {
-        let mut directories = Vec::new();
-        let mut metadata_list = Vec::new();
-
-        read_dir(&self.current_dir)?
-            .filter_map(Result::ok)
-            .filter(|entry| !Self::is_hidden(&entry.path()))
-            .for_each(|entry| {
-                let path = entry.path();
-                if path.is_dir() {
-                    directories.push(path);
-                } else {
-                    if Self::is_playable_file(&path, &PLAYABLE) {
-                        let file_data = FileMetadata::get_file_data(&path);
-                        metadata_list.push((
-                            file_data.track_number.unwrap_or(0),
-                            file_data.title.unwrap_or(file_data.raw_file),
-                            path,
-                        ));
-                    }
-                }
-            });
+        let (mut directories, audio_files): (Vec<PathBuf>, Vec<PathBuf>) =
+            read_dir(&self.current_dir)?
+                .filter_map(Result::ok)
+                .filter(|entry| !Self::is_hidden(&entry.path()))
+                .map(|entry| entry.path())
+                .partition(|path| path.is_dir());
 
         directories.sort();
-        metadata_list.sort_by_key(|&(track_number, _, _)| track_number);
 
-        let playable_files: Vec<PathBuf> =
-            metadata_list.into_iter().map(|(_, _, path)| path).collect();
+        let mut metadata_list: Vec<(u16, String, PathBuf)> = audio_files
+            .into_iter()
+            .filter(|file| Self::is_playable_file(file, &PLAYABLE))
+            .map(|path| {
+                let file_data = FileMetadata::get_file_data(&path);
+                (
+                    file_data.track_number.unwrap_or(0),
+                    file_data.title.unwrap_or(file_data.raw_file),
+                    path,
+                )
+            })
+            .collect();
+
+        metadata_list.sort_unstable_by_key(|entry| entry.0);
 
         self.entries = directories
             .into_iter()
-            .chain(playable_files.into_iter())
+            .chain(metadata_list.into_iter().map(|(_, _, path)| path))
             .collect();
 
         self.list_state
-            .select((!self.entries.is_empty()).then(|| self.selected));
+            .select((!self.entries.is_empty()).then_some(self.selected));
 
         Ok(())
     }
@@ -162,8 +159,10 @@ impl FileBrowser {
 
     /// Lists all items in the directory; displays directories as their name, files as their metadata name, and both by their respective colors.
     pub fn list_items(&self) -> Vec<ListItem<'_>> {
-        let fs_directory = &self.config.colors.fs_directory;
-        let fs_file = &self.config.colors.fs_file;
+        let dir_style = Style::default().fg(Color::from_str(&self.config.colors.fs_directory)
+            .expect("If the color is set correctly in the config then this shouldn't fail"));
+        let file_style = Style::default().fg(Color::from_str(&self.config.colors.fs_file)
+            .expect("If the color is set correctly in the config then this shouldn't fail"));
 
         self.entries
             .iter()
@@ -172,20 +171,13 @@ impl FileBrowser {
                     (
                         entry
                             .file_name()
-                            .map(|s| format!("[{}]", s.to_string_lossy().to_string()))
+                            .map(|s| format!("[{}]", s.to_string_lossy()))
                             .unwrap_or("Unknown".to_string()),
-                        Style::default().fg(Color::from_str(fs_directory).expect(
-                            "If the color is set correctly in the config then this shouldn't fail",
-                        )),
+                        dir_style,
                     )
                 } else {
                     let file_data = FileMetadata::get_file_data(entry);
-                    (
-                        file_data.title.unwrap_or(file_data.raw_file),
-                        Style::default().fg(Color::from_str(fs_file).expect(
-                            "If the color is set correctly in the config then this shouldn't fail",
-                        )),
-                    )
+                    (file_data.title.unwrap_or(file_data.raw_file), file_style)
                 };
                 ListItem::new(display_name).style(style)
             })
