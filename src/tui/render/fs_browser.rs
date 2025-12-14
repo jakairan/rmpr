@@ -63,7 +63,7 @@ impl FileBrowser {
                 .map(|entry| entry.path())
                 .partition(|path| path.is_dir());
 
-        directories.sort();
+        directories.sort_unstable();
 
         let mut metadata_list: Vec<(u16, String, PathBuf)> = audio_files
             .into_iter()
