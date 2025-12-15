@@ -1,6 +1,6 @@
 # Ratatui Music Player (Rust)
 
-## ncmpcpp clone written in rust with ratatui
+## Ratatui Music PLayer Rust
 
 ### rmpr goals
 
