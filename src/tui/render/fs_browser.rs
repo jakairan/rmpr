@@ -58,9 +58,12 @@ impl FileBrowser {
     pub fn update_entries(&mut self) -> Result<(), Box<dyn Error>> {
         let (mut directories, audio_files): (Vec<PathBuf>, Vec<PathBuf>) =
             read_dir(&self.current_dir)?
-                .filter_map(Result::ok)
-                .filter(|entry| !Self::is_hidden(&entry.path()))
-                .map(|entry| entry.path())
+                .filter_map(|entry| {
+                    entry
+                        .ok()
+                        .filter(|entry| !Self::is_hidden(&entry.path()))
+                        .map(|entry| entry.path())
+                })
                 .partition(|path| path.is_dir());
 
         directories.sort_unstable();
